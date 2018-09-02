@@ -38,6 +38,9 @@ class AppContainer extends React.Component{
 	}
 
 	displayTeamsInGroup = (selectedGroup, teams, matches) => {
+		this.setState({
+			selectedGroup: selectedGroup
+		});
 		const {groups} = this.state;
 		const indexGroup = groups.findIndex( group => group.id === selectedGroup);
 		const selectedTeamIds = groups[indexGroup].teams;
@@ -46,14 +49,21 @@ class AppContainer extends React.Component{
 			const indexTeam = teams.findIndex( team => team.id === item);
 			selectedTeams.push(teams[indexTeam])
 		})
-
-		const matchesGroup = matches.filter( item => item.group == this.state.selectedGroup)
 		
+		const matchesGroup = matches.filter( item => item.group == selectedGroup)
+
+		selectedTeams.forEach(item => {
+			item.goals = 0;
+			item.falls = 0;
+			item.games = 0;
+			item.score = 0;	
+		})
+
 
 		this.setState({
 			selectedTeams: selectedTeams
 		});
-
+		
 		this.calculationPoints(matchesGroup, selectedTeams);
 	}
 
@@ -61,10 +71,11 @@ class AppContainer extends React.Component{
 		const scoreWin = 3;
 		const scoreDraw = 1;
 
+
 		matches.map(item => {
 			const score = item.score.split(':');
-			console.log(selectedTeams)
 			
+
 			const indexTeam1 = selectedTeams.findIndex( team => team.id == item.team1);
 			
 			selectedTeams[indexTeam1].goals += +score[0];
@@ -401,7 +412,7 @@ const TournamentGroupMenu = (props) => {
 										"tournament-group-menu-list-item"} 
 				key={ index } 
 				onClick = { () => app.displayTeamsInGroup(item.id, teams, matches) }>
-			<a href="#" onClick = {() => app.setState({ selectedGroup: item.id })}>
+			<a href="#" >
 				{item.title}
 			</a>
 		</li>) 
