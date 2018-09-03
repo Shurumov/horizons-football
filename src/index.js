@@ -31,10 +31,15 @@ class AppContainer extends React.Component{
 
 	setSelectedGroup = (item) => {
 		const indexGroup = this.state.groups.findIndex( group => group.stage === item);
+		
 		this.setState({
 			selectedGroup: this.state.groups[indexGroup].id,
 			selectedStage: item
 		})
+
+		const { teams, groups } = this.state
+
+		this.displayTeamsInGroup(this.state.groups[indexGroup].id, teams, groups)
 	}
 
 	displayTeamsInGroup = (selectedGroup, teams, matches) => {
@@ -57,14 +62,16 @@ class AppContainer extends React.Component{
 			item.falls = 0;
 			item.games = 0;
 			item.score = 0;	
+			item.diff = 0
 		})
 
+		this.calculationPoints(matchesGroup, selectedTeams);
+
+		selectedTeams.sort(this.getTeamsDiff);
 
 		this.setState({
 			selectedTeams: selectedTeams
 		});
-		
-		this.calculationPoints(matchesGroup, selectedTeams);
 	}
 
 	calculationPoints = (matches, selectedTeams) => {
@@ -80,12 +87,14 @@ class AppContainer extends React.Component{
 			
 			selectedTeams[indexTeam1].goals += +score[0];
 			selectedTeams[indexTeam1].falls += +score[1];
+			selectedTeams[indexTeam1].diff += (+score[0] - +score[1]);
 			selectedTeams[indexTeam1].games++;
 
 			const indexTeam2 = selectedTeams.findIndex( team => team.id == item.team2);
 			
 			selectedTeams[indexTeam2].goals += +score[1];
 			selectedTeams[indexTeam2].falls += +score[0];
+			selectedTeams[indexTeam2].diff += (+score[1] - +score[0]);
 			selectedTeams[indexTeam2].games++;
 
 			if (score[0] == score[1]){
@@ -99,6 +108,22 @@ class AppContainer extends React.Component{
 			}
 
 		})
+	}
+
+	getTeamsDiff = (team1, team2) => {
+
+		if (team1.diff > team2.diff)
+			return -1;
+		if (team1.diff < team2.diff)
+			return 1;
+
+		if (team1.goals > team2.goals)
+			return -1;
+		if (team1.goals > team2.goals)
+			return 1;
+
+		
+		
 	}
 
 
@@ -268,7 +293,8 @@ class AppContainer extends React.Component{
 				} else {
 					var response = JSON.parse(xhr.responseText);
 					let matches = response;
-					const teams = appContainer.state.teams;
+					let teams = appContainer.state.teams;
+					const { selectedGroup } = appContainer.state
 
 					matches.forEach(match => {
 						const indexTeam1 = teams.findIndex( team => team.id === match.team1);
@@ -280,6 +306,7 @@ class AppContainer extends React.Component{
 						match.symbol2 = teams[indexTeam2].symbol
 					})
 					addMatchesToState(matches, appContainer);
+					appContainer.displayTeamsInGroup(selectedGroup, teams, matches)
 				}
 			}
 		}
@@ -332,6 +359,7 @@ const App = (props) => {
 					<div className="block-separator"></div>
 					<TournamentMatchesTable matches = { matches } app={ app }/>
 			</main>
+			<Footer />
 		</div>
 	)
 }
@@ -368,7 +396,6 @@ const ListStages = ( props ) => {
 		<option key={index} 
 						value = { item.id } 
 						onClick = {() => setSelectedGroup(item.id) } >
-						
 							{item.title}
 		</option>
 	))
@@ -472,7 +499,6 @@ const TournamentGroupTable = (props) => {
 	
 }
 
-
 const TournamentMatchesTable = (props) => {
 
 	const {app, matches} = props;
@@ -498,6 +524,18 @@ const TournamentMatchesTable = (props) => {
 				{matchesGroupRow}
 			</tbody>
 		</table>
+	)
+}
+
+const Footer = () => {
+
+	return ( 
+		<div className="fixed-footer">
+        <a href="#" onClick={() => {document.location.reload(); return false;}}>
+            <img src="/img/reload.svg"  width="15" height="15" />
+            Обновить
+        </a>
+    </div>
 	)
 }
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Page" transform="translate(-42.000000, -479.000000)" fill="#2E2E2E">
+            <g id="Group-2" transform="translate(0.000000, 363.000000)">
+                <g id="Default-with-Image-Disclosure-Indicator-Table-Cell" transform="translate(0.000000, 90.000000)">
+                    <path d="M60,62 C69.9411255,62 78,53.9411255 78,44 C78,34.0588745 69.9411255,26 60,26 C50.0588745,26 42,34.0588745 42,44 C42,53.9411255 50.0588745,62 60,62 Z M60,60 C68.836556,60 76,52.836556 76,44 C76,35.163444 68.836556,28 60,28 C51.163444,28 44,35.163444 44,44 C44,52.836556 51.163444,60 60,60 Z M60.988438,45.0054023 L60.9884377,34.0000001 L59,34 C59.0026106,37.3909401 59.0000003,47 59.0000003,47 L69,46.9999998 L69,45.005402 L60.988438,45.0054023 Z" id="Plus"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

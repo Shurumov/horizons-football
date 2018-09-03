@@ -68,7 +68,7 @@ a {
 	right: 10px;
 	margin-top: -2px;
 	vertical-align: middle;
-	/*background: url("../img/icon-angle-down.svg") no-repeat center;*/
+	background: url("img/icon-angle-down.svg") no-repeat center;
 	background-size: 100%;
 	width: 12px;
 	height: 5px;
@@ -146,7 +146,7 @@ a {
 	left: -26px;
 	margin-top: 1px;
 	vertical-align: middle;
-	/*background: url("../img/icon-stage.svg") no-repeat center;*/
+	background: url("img/icon-stage.svg") no-repeat center;
 	background-size: 100%;
 	width: 15px;
 	height: 15px;
@@ -162,7 +162,7 @@ a {
 	left: -26px;
 	margin-top: 1px;
 	vertical-align: middle;
-	/*background: url("../img/icon-clock.svg") no-repeat center;*/
+	background: url("img/icon-clock.svg") no-repeat center;
 	background-size: 100%;
 	width: 15px;
 	height: 15px;
