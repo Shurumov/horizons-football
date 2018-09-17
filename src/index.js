@@ -8,6 +8,7 @@ class AppContainer extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
+			loading: true,
 			tournaments: [{}],
 			stages: [
 				{
@@ -307,7 +308,9 @@ class AppContainer extends React.Component{
 					})
 					addMatchesToState(matches, appContainer); 
 					appContainer.displayTeamsInGroup(selectedGroup, teams, matches);
-					stopLoadingAnimation();
+					appContainer.setState({
+						loading: false
+					})
 				}
 			}
 		}
@@ -330,6 +333,8 @@ class AppContainer extends React.Component{
 	}
 
 	render(){
+		const { loading } = this.state;
+
 		return (
 				<div>
 						<App tournament = {this.state.tournaments} 
@@ -341,8 +346,8 @@ class AppContainer extends React.Component{
 								setSelectedGroup = { this.setSelectedGroup }
 								displayTeamsInGroup = {this.displayTeamsInGroup}
 								app = {this}/>
-						<LoadAnimation />
-				</div>				
+								{loading ? <LoadAnimation /> : null}
+				</div>
 		)
 	}
 }
@@ -555,9 +560,6 @@ const Footer = () => {
 
 sessionFromNative('{"sessionId":"fb3d9c15-4619-48d1-8ab4-c41e2393ec9d","userId":"90","projectName": "tmk","baseUrl":"https://api.appercode.com/v1/","refreshToken":"a022f057-8680-43f6-9f6e-8809be5c9907"}')
 
-function stopLoadingAnimation(){
-	document.querySelector(".loader_background").hidden = true;
-}
 
 function sessionFromNative(e){
 	const userData = JSON.parse(e);
