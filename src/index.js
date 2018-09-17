@@ -306,7 +306,8 @@ class AppContainer extends React.Component{
 						match.symbol2 = teams[indexTeam2].symbol
 					})
 					addMatchesToState(matches, appContainer); 
-					appContainer.displayTeamsInGroup(selectedGroup, teams, matches)
+					appContainer.displayTeamsInGroup(selectedGroup, teams, matches);
+					stopLoadingAnimation();
 				}
 			}
 		}
@@ -329,7 +330,9 @@ class AppContainer extends React.Component{
 	}
 
 	render(){
-		return <App tournament = {this.state.tournaments} 
+		return (
+				<div>
+						<App tournament = {this.state.tournaments} 
 								stages = { this.state.stages } 
 								groups = { this.state.groups }
 								teams = { this.state.teams }
@@ -338,7 +341,18 @@ class AppContainer extends React.Component{
 								setSelectedGroup = { this.setSelectedGroup }
 								displayTeamsInGroup = {this.displayTeamsInGroup}
 								app = {this}/>
+						<LoadAnimation />
+				</div>				
+		)
 	}
+}
+
+const LoadAnimation = () => {
+	return(
+		<div className="loader_background">
+			<div className="loader"></div>
+		</div>
+	)
 }
 
 const App = (props) => {
@@ -532,7 +546,7 @@ const Footer = () => {
 	return ( 
 		<div className="fixed-footer">
         <a href="#" onClick={() => {document.location.reload(); return false;}}>
-            <img src="/img/reload.svg"  width="15" height="15" />
+            <img src="/img/reload.svg"   width="15" height="15" />
             Обновить
         </a>
     </div>
@@ -540,6 +554,10 @@ const Footer = () => {
 }
 
 sessionFromNative('{"sessionId":"fb3d9c15-4619-48d1-8ab4-c41e2393ec9d","userId":"90","projectName": "tmk","baseUrl":"https://api.appercode.com/v1/","refreshToken":"a022f057-8680-43f6-9f6e-8809be5c9907"}')
+
+function stopLoadingAnimation(){
+	document.querySelector(".loader_background").hidden = true;
+}
 
 function sessionFromNative(e){
 	const userData = JSON.parse(e);

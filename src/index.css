@@ -58,6 +58,7 @@ a {
 	cursor: pointer;
 	background: #fff;
 	padding-right: 25px;
+	z-index: 49;
 }
 
 .custom-select::after {
@@ -397,4 +398,38 @@ text-align: center;
 	top: 1px;
 	position: relative;
 	left: -3px;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0)
+	}
+	100% {
+		transform: rotate(360deg)
+	}
+}
+
+.loader {
+border: 6px solid #c4c4c4;
+border-top: 6px solid #FF794A;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+position: fixed;
+top: 50%;
+left: 50%;
+width: 50px;
+height: 50px;
+margin-top: -25px;
+margin-left: -25px;
+z-index: 50;
+}
+
+.loader_background {
+background-color: #fff;
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
+z-index: 50;
 }
