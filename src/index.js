@@ -17,7 +17,10 @@ class AppContainer extends React.Component{
 			selectedStage: '',
 			groups: [
 				{
-					date: null
+					id: null,
+					stage: null,
+					teams: null,
+					title: null
 				}
 			],
 			selectedGroup: '',
@@ -31,7 +34,6 @@ class AppContainer extends React.Component{
 
 	setSelectedGroup = (item) => {
 		const indexGroup = this.state.groups.findIndex( group => group.stage === item);
-		
 		this.setState({
 			selectedGroup: this.state.groups[indexGroup].id,
 			selectedStage: item
@@ -48,13 +50,16 @@ class AppContainer extends React.Component{
 		});
 		const {groups} = this.state;
 		const indexGroup = groups.findIndex( group => group.id === selectedGroup);
-		const selectedTeamIds = groups[indexGroup].teams;
+		let  selectedTeamIds = [];
+		selectedTeamIds = groups[indexGroup].teams;
 		let selectedTeams=[];
-		selectedTeamIds.forEach( item => {
-			const indexTeam = teams.findIndex( team => team.id === item);
-			selectedTeams.push(teams[indexTeam])
-		})
-		
+
+		if(selectedTeamIds){
+			selectedTeamIds.forEach( item => {
+				const indexTeam = teams.findIndex( team => team.id === item);
+				selectedTeams.push(teams[indexTeam])
+			})
+		}
 		const matchesGroup = matches.filter( item => item.group == selectedGroup)
 
 		selectedTeams.forEach(item => {
@@ -121,12 +126,7 @@ class AppContainer extends React.Component{
 			return -1;
 		if (team1.goals > team2.goals)
 			return 1;
-
-		
-		
 	}
-
-
 
 	componentDidMount() {
 
@@ -153,7 +153,7 @@ class AppContainer extends React.Component{
 
 		function getTournament (baseUrl, projectName, session, refreshToken) {
 			var xhr = new XMLHttpRequest();
-			xhr.open('GET', baseUrl + projectName + "/objects/Tournaments?include=['title','description']");
+			xhr.open('GET', baseUrl + projectName + "/objects/Tournaments?include=['title','description']&take=-1");
 			xhr.setRequestHeader('X-Appercode-Session-Token', session);
 			xhr.send();
 	
@@ -182,7 +182,7 @@ class AppContainer extends React.Component{
 		
 		function getStages(baseUrl, projectName, session){
 			var xhr = new XMLHttpRequest();
-			xhr.open('GET', baseUrl + projectName + "/objects/Stages?include=['title','date','id']");
+			xhr.open('GET', baseUrl + projectName + "/objects/Stages?include=['title','date','id']&take=-1");
 			xhr.setRequestHeader('X-Appercode-Session-Token', session);
 			xhr.send();
 	
@@ -212,7 +212,7 @@ class AppContainer extends React.Component{
 
 		function getGroups(baseUrl, projectName, session){
 			var xhr = new XMLHttpRequest();
-			xhr.open('GET', baseUrl + projectName + "/objects/GroupsFootball?include=['title','stage','teams','id']");
+			xhr.open('GET', baseUrl + projectName + "/objects/GroupsFootball?include=['title','stage','teams','id']&take=-1");
 			xhr.setRequestHeader('X-Appercode-Session-Token', session);
 			xhr.send();
 	
@@ -242,7 +242,7 @@ class AppContainer extends React.Component{
 
 		function getTeams(baseUrl, projectName, session){
 			var xhr = new XMLHttpRequest();
-			xhr.open('GET', baseUrl + projectName + "/objects/footballTeam?include=['id','title','symbol']");
+			xhr.open('GET', baseUrl + projectName + "/objects/footballTeam?include=['id','title','symbol']&take=-1");
 			xhr.setRequestHeader('X-Appercode-Session-Token', session);
 			xhr.send();
 	
@@ -278,7 +278,7 @@ class AppContainer extends React.Component{
 
 		function getMatches(baseUrl, projectName, session){
 			var xhr = new XMLHttpRequest();
-			xhr.open('GET', baseUrl + projectName + "/objects/GamesFooball?include=['stage','group','team1','team2','score']");
+			xhr.open('GET', baseUrl + projectName + "/objects/GamesFooball?include=['stage','group','team1','team2','score']&take=-1");
 			xhr.setRequestHeader('X-Appercode-Session-Token', session);
 			xhr.send();
 	
@@ -305,7 +305,7 @@ class AppContainer extends React.Component{
 						match.team2Title = teams[indexTeam2].title;
 						match.symbol2 = teams[indexTeam2].symbol
 					})
-					addMatchesToState(matches, appContainer);
+					addMatchesToState(matches, appContainer); 
 					appContainer.displayTeamsInGroup(selectedGroup, teams, matches)
 				}
 			}
@@ -539,7 +539,7 @@ const Footer = () => {
 	)
 }
 
-sessionFromNative('{"sessionId":"5bd5754a-cb59-48eb-b1dc-d26f58ae1209","userId":"1","projectName": "tmk","baseUrl":"https://api.appercode.com/v1/","refreshToken":"d085ab17-320e-4ea7-b832-aed37c58fdd9"}')
+sessionFromNative('{"sessionId":"fb3d9c15-4619-48d1-8ab4-c41e2393ec9d","userId":"90","projectName": "tmk","baseUrl":"https://api.appercode.com/v1/","refreshToken":"a022f057-8680-43f6-9f6e-8809be5c9907"}')
 
 function sessionFromNative(e){
 	const userData = JSON.parse(e);
