@@ -195,7 +195,7 @@ a {
 	font-size: 15px;
 }
 
-.tournament-group-menu-list-item a {
+.tournament-group-menu-list-item div {
 	display: block;
 	position: relative;
 	height: 100%;
@@ -203,13 +203,13 @@ a {
 	padding: 0 20px;
 }
 
-.tournament-group-menu-list-item.active a,
-.tournament-group-menu-list-item a:hover{
+.tournament-group-menu-list-item.active div,
+.tournament-group-menu-list-item div:hover{
 	color: #ff813c;
 }
 
-.tournament-group-menu-list-item.active a::after,
-.tournament-group-menu-list-item a:hover::after{
+.tournament-group-menu-list-item.active div::after,
+.tournament-group-menu-list-item div:hover::after{
 	content: "";
 	position: absolute;
 	left: 0;

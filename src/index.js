@@ -129,8 +129,9 @@ class AppContainer extends React.Component{
 			return 1;
 	}
 
-	componentDidMount() {
 
+
+	componentDidMount() {
 		function loginByToken(baseUrl, projectName, refreshToken) {
 			var xhr = new XMLHttpRequest();
 			var url = baseUrl + projectName + "/login/byToken";
@@ -142,7 +143,7 @@ class AppContainer extends React.Component{
 				if (xhr.readyState !== 4)
 					return;
 				if (xhr.status !== 200) {
-					alert(xhr.status + ': ' + xhr.statusText);
+					console.log(xhr.status + ': ' + xhr.statusText);
 				} else {
 					var response = JSON.parse(xhr.responseText)
 					const session = response.sessionId;
@@ -165,7 +166,7 @@ class AppContainer extends React.Component{
 					loginByToken(baseUrl, projectName, refreshToken);
 				} else
 				if (xhr.status !== 200) {
-					alert(xhr.status + ': ' + xhr.statusText);
+					console.log(xhr.status + ': ' + xhr.statusText);
 				} else {
 					var response = JSON.parse(xhr.responseText);
 					const tournaments = response;
@@ -194,7 +195,7 @@ class AppContainer extends React.Component{
 					//loginByToken();
 				} else
 				if (xhr.status !== 200) {
-					alert(xhr.status + ': ' + xhr.statusText);
+					console.log(xhr.status + ': ' + xhr.statusText);
 				} else {
 					var response = JSON.parse(xhr.responseText);
 					const stages = response;
@@ -224,7 +225,7 @@ class AppContainer extends React.Component{
 					//loginByToken();
 				} else
 				if (xhr.status !== 200) {
-					alert(xhr.status + ': ' + xhr.statusText);
+					console.log(xhr.status + ': ' + xhr.statusText);
 				} else {
 					var response = JSON.parse(xhr.responseText);
 					const groups = response;
@@ -254,7 +255,7 @@ class AppContainer extends React.Component{
 					//loginByToken();
 				} else
 				if (xhr.status !== 200) {
-					alert(xhr.status + ': ' + xhr.statusText);
+					console.log(xhr.status + ': ' + xhr.statusText);
 				} else {
 					var response = JSON.parse(xhr.responseText);
 					const teams = response;
@@ -290,7 +291,7 @@ class AppContainer extends React.Component{
 					//loginByToken();
 				} else
 				if (xhr.status !== 200) {
-					alert(xhr.status + ': ' + xhr.statusText);
+					console.log(xhr.status + ': ' + xhr.statusText);
 				} else {
 					var response = JSON.parse(xhr.responseText);
 					let matches = response;
@@ -320,9 +321,6 @@ class AppContainer extends React.Component{
 				matches: matches
 			})
 		}
-
-		
-
 		const { baseUrl, projectName, refreshToken} = this.props;
 		this.setState({
 			session: this.props.session
@@ -333,6 +331,7 @@ class AppContainer extends React.Component{
 	}
 
 	render(){
+		
 		const { loading } = this.state;
 
 		return (
@@ -378,7 +377,7 @@ const App = (props) => {
 					<div className="block-separator"></div>
 					<TournamentMatchesTable matches = { matches } app={ app }/>
 			</main>
-			<Footer />
+			<Footer app = {app} />
 		</div>
 	)
 }
@@ -458,9 +457,9 @@ const TournamentGroupMenu = (props) => {
 										"tournament-group-menu-list-item"} 
 				key={ index } 
 				onClick = { () => app.displayTeamsInGroup(item.id, teams, matches) }>
-			<a href="#" >
+			<div  >
 				{item.title}
-			</a>
+			</div>
 		</li>) 
 	);
 
@@ -547,19 +546,13 @@ const TournamentMatchesTable = (props) => {
 }
 
 const Footer = () => {
-
+	
 	return ( 
-		<div className="fixed-footer">
-        <a href="#" onClick={() => {document.location.reload(); return false;}}>
-            <img src="/img/reload.svg"   width="15" height="15" />
-            Обновить
-        </a>
+		<div className="fixed-footer" onClick={() => document.location.reload(false)}>
+			Обновить
     </div>
 	)
 }
-
-sessionFromNative('{"sessionId":"fb3d9c15-4619-48d1-8ab4-c41e2393ec9d","userId":"90","projectName": "tmk","baseUrl":"https://api.appercode.com/v1/","refreshToken":"a022f057-8680-43f6-9f6e-8809be5c9907"}')
-
 
 function sessionFromNative(e){
 	const userData = JSON.parse(e);
@@ -577,3 +570,9 @@ function sessionFromNative(e){
 										refreshToken={refreshToken}
 									/>, document.getElementById('root'));
 }
+
+sessionFromNative('{"sessionId":"d2f0a684-2e6e-4342-b5f6-0e11421c6361","userId":"4784","projectName": "tmk","baseUrl":"https://api.appercode.com/v1/","refreshToken":"1"}')
+
+setTimeout(function () {
+	document.location.reload()
+}, 10000);
