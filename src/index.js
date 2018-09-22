@@ -548,7 +548,7 @@ const TournamentMatchesTable = (props) => {
 const Footer = () => {
 	
 	return ( 
-		<div className="fixed-footer" onClick={() => document.location.reload(false)}>
+		<div className="fixed-footer" onClick={() => appercode.reloadPage()}>
 			Обновить
     </div>
 	)
@@ -573,6 +573,3 @@ function sessionFromNative(e){
 
 sessionFromNative('{"sessionId":"d2f0a684-2e6e-4342-b5f6-0e11421c6361","userId":"4784","projectName": "tmk","baseUrl":"https://api.appercode.com/v1/","refreshToken":"1"}')
 
-setTimeout(function () {
-	document.location.reload()
-}, 10000);
