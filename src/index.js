@@ -545,13 +545,24 @@ const TournamentMatchesTable = (props) => {
 	)
 }
 
-const Footer = () => {
-	
-	return ( 
-		<div className="fixed-footer" onClick={() => appercode.reloadPage()}>
-			Обновить
+const Footer = (props) => {
+	const { app } = props
+	const isiOS = app.props.isiOS;
+	var appercode; 
+	return (
+    <div>
+      {isiOS ? (
+        <div className="fixed-footer" onClick={() => document.location.reload()}>
+					Обновить
+				</div>
+      ) : (
+        <div className="fixed-footer" onClick={() => appercode.reloadPage()}>
+					Обновить
+				</div>
+      )}
     </div>
-	)
+  );
+
 }
 
 function sessionFromNative(e){
@@ -561,6 +572,7 @@ function sessionFromNative(e){
   const projectName = userData.projectName;
   const baseUrl = userData.baseUrl;
 	const refreshToken = userData.refreshToken;
+	const isiOS = (userData.isiOS == "iOS");
 	
 	ReactDOM.render(<AppContainer 
 										session={session} 
@@ -568,8 +580,9 @@ function sessionFromNative(e){
 										baseUrl={baseUrl}
 										projectName={projectName}
 										refreshToken={refreshToken}
+										isiOS = { isiOS }
 									/>, document.getElementById('root'));
 }
 
-sessionFromNative('{"sessionId":"d2f0a684-2e6e-4342-b5f6-0e11421c6361","userId":"4784","projectName": "tmk","baseUrl":"https://api.appercode.com/v1/","refreshToken":"1"}')
+sessionFromNative('{"sessionId":"d07b3f95-56af-4e91-9e05-0852365d7754","isiOS":"iOS","userId":"90","projectName": "tmk","baseUrl":"https://api.appercode.com/v1/","refreshToken":"d2189dbb-c6ad-47b0-8c5d-580598ce4b2e"}')
 

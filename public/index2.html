@@ -448,737 +448,586 @@ z-index: 50;
       </style>
     <div id="root"></div>
     <script type="text/babel">
+class AppContainer extends React.Component{
 
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var AppContainer = function (_React$Component) {
-	_inherits(AppContainer, _React$Component);
-
-	function AppContainer(props) {
-		_classCallCheck(this, AppContainer);
-
-		var _this = _possibleConstructorReturn(this, (AppContainer.__proto__ || Object.getPrototypeOf(AppContainer)).call(this, props));
-
-		_this.setSelectedGroup = function (item) {
-			var indexGroup = _this.state.groups.findIndex(function (group) {
-				return group.stage === item;
-			});
-			_this.setState({
-				selectedGroup: _this.state.groups[indexGroup].id,
-				selectedStage: item
-			});
-
-			var _this$state = _this.state,
-			    teams = _this$state.teams,
-			    groups = _this$state.groups;
-
-
-			_this.displayTeamsInGroup(_this.state.groups[indexGroup].id, teams, groups);
-		};
-
-		_this.displayTeamsInGroup = function (selectedGroup, teams, matches) {
-			_this.setState({
-				selectedGroup: selectedGroup
-			});
-			var groups = _this.state.groups;
-
-			var indexGroup = groups.findIndex(function (group) {
-				return group.id === selectedGroup;
-			});
-			var selectedTeamIds = [];
-			selectedTeamIds = groups[indexGroup].teams;
-			var selectedTeams = [];
-
-			if (selectedTeamIds) {
-				selectedTeamIds.forEach(function (item) {
-					var indexTeam = teams.findIndex(function (team) {
-						return team.id === item;
-					});
-					selectedTeams.push(teams[indexTeam]);
-				});
-			}
-			var matchesGroup = matches.filter(function (item) {
-				return item.group == selectedGroup;
-			});
-
-			selectedTeams.forEach(function (item) {
-				item.goals = 0;
-				item.falls = 0;
-				item.games = 0;
-				item.score = 0;
-				item.diff = 0;
-			});
-
-			_this.calculationPoints(matchesGroup, selectedTeams);
-
-			selectedTeams.sort(_this.getTeamsDiff);
-
-			_this.setState({
-				selectedTeams: selectedTeams
-			});
-		};
-
-		_this.calculationPoints = function (matches, selectedTeams) {
-			var scoreWin = 3;
-			var scoreDraw = 1;
-
-			matches.map(function (item) {
-				var score = item.score.split(':');
-
-				var indexTeam1 = selectedTeams.findIndex(function (team) {
-					return team.id == item.team1;
-				});
-
-				selectedTeams[indexTeam1].goals += +score[0];
-				selectedTeams[indexTeam1].falls += +score[1];
-				selectedTeams[indexTeam1].diff += +score[0] - +score[1];
-				selectedTeams[indexTeam1].games++;
-
-				var indexTeam2 = selectedTeams.findIndex(function (team) {
-					return team.id == item.team2;
-				});
-
-				selectedTeams[indexTeam2].goals += +score[1];
-				selectedTeams[indexTeam2].falls += +score[0];
-				selectedTeams[indexTeam2].diff += +score[1] - +score[0];
-				selectedTeams[indexTeam2].games++;
-
-				if (score[0] == score[1]) {
-					selectedTeams[indexTeam1].score += scoreDraw;
-					selectedTeams[indexTeam2].score += scoreDraw;
-				} else if (score[0] > score[1]) {
-					selectedTeams[indexTeam1].score += scoreWin;
-				} else {
-					selectedTeams[indexTeam2].score += scoreWin;
-				}
-			});
-		};
-
-		_this.getTeamsDiff = function (team1, team2) {
-
-			if (team1.diff > team2.diff) return -1;
-			if (team1.diff < team2.diff) return 1;
-
-			if (team1.goals > team2.goals) return -1;
-			if (team1.goals > team2.goals) return 1;
-		};
-
-		_this.state = {
-			loading: true,
-			tournaments: [{}],
-			stages: [{
+constructor(props){
+	super(props);
+	this.state = {
+		loading: true,
+		tournaments: [{}],
+		stages: [
+			{
 				date: null
-			}],
-			selectedStage: '',
-			groups: [{
+			}
+		],
+		selectedStage: '',
+		groups: [
+			{
 				id: null,
 				stage: null,
 				teams: null,
 				title: null
-			}],
-			selectedGroup: '',
-			teams: [{}],
-			matches: [],
-			selectedTeams: []
-		};
-		return _this;
+			}
+		],
+		selectedGroup: '',
+		teams:[{
+			
+		}],
+		matches: [],
+		selectedTeams: []
+	};
+}
+
+setSelectedGroup = (item) => {
+	const indexGroup = this.state.groups.findIndex( group => group.stage === item);
+	this.setState({
+		selectedGroup: this.state.groups[indexGroup].id,
+		selectedStage: item
+	})
+
+	const { teams, groups } = this.state
+
+	this.displayTeamsInGroup(this.state.groups[indexGroup].id, teams, groups)
+}
+
+displayTeamsInGroup = (selectedGroup, teams, matches) => {
+	this.setState({
+		selectedGroup: selectedGroup
+	});
+	const {groups} = this.state;
+	const indexGroup = groups.findIndex( group => group.id === selectedGroup);
+	let  selectedTeamIds = [];
+	selectedTeamIds = groups[indexGroup].teams;
+	let selectedTeams=[];
+
+	if(selectedTeamIds){
+		selectedTeamIds.forEach( item => {
+			const indexTeam = teams.findIndex( team => team.id === item);
+			selectedTeams.push(teams[indexTeam])
+		})
 	}
+	const matchesGroup = matches.filter( item => item.group == selectedGroup)
 
-	_createClass(AppContainer, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			function loginByToken(baseUrl, projectName, refreshToken) {
-				var xhr = new XMLHttpRequest();
-				var url = baseUrl + projectName + "/login/byToken";
-				xhr.open("POST", url, true);
-				xhr.setRequestHeader("Content-Type", "application/json");
+	selectedTeams.forEach(item => {
+		item.goals = 0;
+		item.falls = 0;
+		item.games = 0;
+		item.score = 0;	
+		item.diff = 0
+	})
 
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState !== 4) return;
-					if (xhr.status !== 200) {
-						console.log(xhr.status + ': ' + xhr.statusText);
-					} else {
-						var response = JSON.parse(xhr.responseText);
-						var _session = response.sessionId;
-						getTournament(baseUrl, projectName, _session, refreshToken);
-					}
-				};
-				xhr.send('"' + refreshToken + '"');
-			}
+	this.calculationPoints(matchesGroup, selectedTeams);
 
-			function getTournament(baseUrl, projectName, session, refreshToken) {
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', baseUrl + projectName + "/objects/Tournaments?include=['title','description']&take=-1");
-				xhr.setRequestHeader('X-Appercode-Session-Token', session);
-				xhr.send();
+	selectedTeams.sort(this.getTeamsDiff);
 
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState !== 4) return;
-					if (xhr.status === 401) {
-						loginByToken(baseUrl, projectName, refreshToken);
-					} else if (xhr.status !== 200) {
-						console.log(xhr.status + ': ' + xhr.statusText);
-					} else {
-						var response = JSON.parse(xhr.responseText);
-						var tournaments = response;
-						addTournamentToState(tournaments, appContainer);
-						getStages(baseUrl, projectName, session);
-					}
-				};
-			}
+	this.setState({
+		selectedTeams: selectedTeams
+	});
+}
 
-			function addTournamentToState(tournaments, appContainer) {
-				appContainer.setState({
-					tournaments: tournaments
-				});
-			}
-
-			function getStages(baseUrl, projectName, session) {
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', baseUrl + projectName + "/objects/Stages?include=['title','date','id']&take=-1");
-				xhr.setRequestHeader('X-Appercode-Session-Token', session);
-				xhr.send();
-
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState !== 4) return;
-					if (xhr.status === 401) {
-						//loginByToken();
-					} else if (xhr.status !== 200) {
-						console.log(xhr.status + ': ' + xhr.statusText);
-					} else {
-						var response = JSON.parse(xhr.responseText);
-						var stages = response;
-						addStagesToState(stages, appContainer);
-						getGroups(baseUrl, projectName, session);
-					}
-				};
-			}
-
-			function addStagesToState(stages, appContainer) {
-				appContainer.setState({
-					stages: stages,
-					selectedStage: stages[0].id
-				});
-			}
-
-			function getGroups(baseUrl, projectName, session) {
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', baseUrl + projectName + "/objects/GroupsFootball?include=['title','stage','teams','id']&take=-1");
-				xhr.setRequestHeader('X-Appercode-Session-Token', session);
-				xhr.send();
-
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState !== 4) return;
-					if (xhr.status === 401) {
-						//loginByToken();
-					} else if (xhr.status !== 200) {
-						console.log(xhr.status + ': ' + xhr.statusText);
-					} else {
-						var response = JSON.parse(xhr.responseText);
-						var groups = response;
-						addGroupsToState(groups, appContainer);
-						getTeams(baseUrl, projectName, session);
-					}
-				};
-			}
-
-			function addGroupsToState(groups, appContainer) {
-				appContainer.setState({
-					groups: groups,
-					selectedGroup: groups[0].id
-				});
-			}
-
-			function getTeams(baseUrl, projectName, session) {
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', baseUrl + projectName + "/objects/footballTeam?include=['id','title','symbol']&take=-1");
-				xhr.setRequestHeader('X-Appercode-Session-Token', session);
-				xhr.send();
-
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState !== 4) return;
-					if (xhr.status === 401) {
-						//loginByToken();
-					} else if (xhr.status !== 200) {
-						console.log(xhr.status + ': ' + xhr.statusText);
-					} else {
-						var response = JSON.parse(xhr.responseText);
-						var teams = response;
-						addTeamsToState(teams, appContainer);
-						getMatches(baseUrl, projectName, session);
-					}
-				};
-			}
-
-			function addTeamsToState(teams, appContainer) {
-
-				teams.forEach(function (item) {
-					item.goals = 0;
-					item.falls = 0;
-					item.score = 0;
-					item.games = 0;
-				});
-				appContainer.setState({
-					teams: teams
-				});
-			}
-
-			function getMatches(baseUrl, projectName, session) {
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', baseUrl + projectName + "/objects/GamesFooball?include=['stage','group','team1','team2','score']&take=-1");
-				xhr.setRequestHeader('X-Appercode-Session-Token', session);
-				xhr.send();
-
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState !== 4) return;
-					if (xhr.status === 401) {
-						//loginByToken();
-					} else if (xhr.status !== 200) {
-						console.log(xhr.status + ': ' + xhr.statusText);
-					} else {
-						var response = JSON.parse(xhr.responseText);
-						var matches = response;
-						var teams = appContainer.state.teams;
-						var selectedGroup = appContainer.state.selectedGroup;
+calculationPoints = (matches, selectedTeams) => {
+	const scoreWin = 3;
+	const scoreDraw = 1;
 
 
-						matches.forEach(function (match) {
-							var indexTeam1 = teams.findIndex(function (team) {
-								return team.id === match.team1;
-							});
-							match.team1Title = teams[indexTeam1].title;
-							match.symbol1 = teams[indexTeam1].symbol;
+	matches.map(item => {
+		const score = item.score.split(':');
+		
 
-							var indexTeam2 = teams.findIndex(function (team) {
-								return team.id === match.team2;
-							});
-							match.team2Title = teams[indexTeam2].title;
-							match.symbol2 = teams[indexTeam2].symbol;
-						});
-						addMatchesToState(matches, appContainer);
-						appContainer.displayTeamsInGroup(selectedGroup, teams, matches);
-						appContainer.setState({
-							loading: false
-						});
-					}
-				};
-			}
+		const indexTeam1 = selectedTeams.findIndex( team => team.id == item.team1);
+		
+		selectedTeams[indexTeam1].goals += +score[0];
+		selectedTeams[indexTeam1].falls += +score[1];
+		selectedTeams[indexTeam1].diff += (+score[0] - +score[1]);
+		selectedTeams[indexTeam1].games++;
 
-			function addMatchesToState(matches, appContainer) {
-				appContainer.setState({
-					matches: matches
-				});
-			}
-			var _props = this.props,
-			    baseUrl = _props.baseUrl,
-			    projectName = _props.projectName,
-			    refreshToken = _props.refreshToken;
+		const indexTeam2 = selectedTeams.findIndex( team => team.id == item.team2);
+		
+		selectedTeams[indexTeam2].goals += +score[1];
+		selectedTeams[indexTeam2].falls += +score[0];
+		selectedTeams[indexTeam2].diff += (+score[1] - +score[0]);
+		selectedTeams[indexTeam2].games++;
 
-			this.setState({
-				session: this.props.session
-			});
-			var session = this.props.session;
-			var appContainer = this;
-			getTournament(baseUrl, projectName, session, refreshToken);
+		if (score[0] == score[1]){
+			selectedTeams[indexTeam1].score += scoreDraw
+			selectedTeams[indexTeam2].score += scoreDraw
+		} else if (score[0] > score[1])
+		{
+			selectedTeams[indexTeam1].score += scoreWin
+		} else {
+			selectedTeams[indexTeam2].score += scoreWin
 		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var loading = this.state.loading;
 
+	})
+}
 
-			return React.createElement(
-				'div',
-				null,
-				React.createElement(App, { tournament: this.state.tournaments,
-					stages: this.state.stages,
-					groups: this.state.groups,
-					teams: this.state.teams,
-					matches: this.state.matches,
-					selectedTeams: this.state.selectedTeams,
-					setSelectedGroup: this.setSelectedGroup,
-					displayTeamsInGroup: this.displayTeamsInGroup,
-					app: this }),
-				loading ? React.createElement(LoadAnimation, null) : null
-			);
-		}
-	}]);
+getTeamsDiff = (team1, team2) => {
 
-	return AppContainer;
-}(React.Component);
+	if (team1.diff > team2.diff)
+		return -1;
+	if (team1.diff < team2.diff)
+		return 1;
 
-var LoadAnimation = function LoadAnimation() {
-	return React.createElement(
-		'div',
-		{ className: 'loader_background' },
-		React.createElement('div', { className: 'loader' })
-	);
-};
-
-var App = function App(props) {
-	var tournament = props.tournament,
-	    stages = props.stages,
-	    groups = props.groups,
-	    teams = props.teams,
-	    matches = props.matches,
-	    setSelectedGroup = props.setSelectedGroup,
-	    selectedTeams = props.selectedTeams,
-	    app = props.app;
-
-
-	return React.createElement(
-		'div',
-		null,
-		React.createElement(
-			'header',
-			{ className: 'tournament-header' },
-			React.createElement(
-				'div',
-				{ className: 'clearfix' },
-				React.createElement(TournamentInfo, { title: tournament[0].title, description: tournament[0].description }),
-				React.createElement(StageInfo, { stages: stages, setSelectedGroup: setSelectedGroup, app: app })
-			),
-			React.createElement('div', { className: 'block-separator' })
-		),
-		React.createElement(
-			'main',
-			null,
-			React.createElement(TournamentGroupMenu, { groups: groups, teams: teams, matches: matches, app: app }),
-			React.createElement(TournamentGroupTable, { selectedTeams: selectedTeams }),
-			React.createElement('div', { className: 'block-separator' }),
-			React.createElement(TournamentMatchesTable, { matches: matches, app: app })
-		),
-		React.createElement(Footer, { app: app })
-	);
-};
-
-var TournamentInfo = function TournamentInfo(props) {
-	var title = props.title,
-	    description = props.description;
-
-	var descriptionHTML = description;
-
-	return React.createElement(
-		'div',
-		{ className: 'tournament-header-desc' },
-		React.createElement(
-			'div',
-			{ className: 'tournament-header-title' },
-			title
-		),
-		React.createElement('div', { dangerouslySetInnerHTML: { __html: descriptionHTML } })
-	);
-};
-
-var StageInfo = function StageInfo(props) {
-	var stages = props.stages,
-	    setSelectedGroup = props.setSelectedGroup,
-	    app = props.app;
-
-	return React.createElement(
-		'div',
-		{ className: 'tournament-header-meta' },
-		React.createElement(ListStages, { stages: stages,
-			setSelectedGroup: setSelectedGroup,
-			app: app }),
-		React.createElement(DateStage, { app: app })
-	);
-};
-
-var ListStages = function ListStages(props) {
-	var stages = props.stages,
-	    setSelectedGroup = props.setSelectedGroup,
-	    app = props.app;
-
-	var stagesList = stages.map(function (item, index) {
-		return React.createElement(
-			'option',
-			{ key: index,
-				value: item.id,
-				onClick: function onClick() {
-					return setSelectedGroup(item.id);
-				} },
-			item.title
-		);
-	});
-
-	return React.createElement(
-		'div',
-		{ className: 'tournament-header-meta-stage' },
-		React.createElement(
-			'div',
-			{ className: 'custom-select' },
-			React.createElement(
-				'select',
-				{ name: 'stage',
-					onChange: function onChange(event) {
-						return setSelectedGroup(event.target.value);
-					},
-					value: app.state.selectedStage },
-				stagesList
-			)
-		)
-	);
-};
-
-var DateStage = function DateStage(props) {
-	var app = props.app;
-	var _app$state = app.state,
-	    selectedStage = _app$state.selectedStage,
-	    stages = _app$state.stages;
-
-	var indexDateStage = stages.findIndex(function (item) {
-		return item.id === selectedStage;
-	});
-
-	return React.createElement(
-		'div',
-		{ className: 'tournament-header-meta-date' },
-		indexDateStage !== -1 ? stages[indexDateStage].date : null
-	);
-};
-
-var TournamentGroupMenu = function TournamentGroupMenu(props) {
-	var app = props.app,
-	    groups = props.groups,
-	    teams = props.teams,
-	    matches = props.matches;
-	var _app$state2 = app.state,
-	    selectedGroup = _app$state2.selectedGroup,
-	    selectedStage = _app$state2.selectedStage;
-
-	var groupsList = groups.filter(function (item) {
-		if (item.stage === selectedStage) return item;
-	});
-	groupsList = groupsList.map(function (item, index) {
-		return React.createElement(
-			'li',
-			{ className: selectedGroup == item.id ? "tournament-group-menu-list-item active" : "tournament-group-menu-list-item",
-				key: index,
-				onClick: function onClick() {
-					return app.displayTeamsInGroup(item.id, teams, matches);
-				} },
-			React.createElement(
-				'div',
-				null,
-				item.title
-			)
-		);
-	});
-
-	return React.createElement(
-		'div',
-		{ className: 'tournament-group-menu' },
-		React.createElement(
-			'div',
-			{ className: 'tournament-group-menu-list-wrapper' },
-			React.createElement(
-				'ul',
-				{ className: 'tournament-group-menu-list' },
-				groupsList
-			)
-		)
-	);
-};
-
-var TournamentGroupTable = function TournamentGroupTable(props) {
-	var selectedTeams = props.selectedTeams;
-
-
-	var teamsRows = selectedTeams.map(function (item, index) {
-		return React.createElement(
-			'tr',
-			{ key: index },
-			React.createElement(
-				'td',
-				{ className: 'tournament-group-table-num text-center text-gray' },
-				index + 1
-			),
-			React.createElement(
-				'td',
-				{ className: 'tournament-group-table-logo' },
-				React.createElement('img', { src: item.symbol, alt: item.title })
-			),
-			React.createElement(
-				'td',
-				null,
-				item.title,
-				' '
-			),
-			React.createElement(
-				'td',
-				{ className: 'text-center text-gray' },
-				item.games
-			),
-			React.createElement(
-				'td',
-				{ className: 'text-center text-gray' },
-				item.score
-			),
-			React.createElement(
-				'td',
-				{ className: 'text-center text-gray' },
-				item.goals,
-				'-',
-				item.falls
-			)
-		);
-	});
-
-	return React.createElement(
-		'table',
-		{ className: 'tournament-group-table' },
-		React.createElement(
-			'tbody',
-			null,
-			React.createElement(
-				'tr',
-				{ className: 'tournament-group-table-heading' },
-				React.createElement('th', { className: 'tournament-group-table-num' }),
-				React.createElement('th', { className: 'tournament-group-table-logo' }),
-				React.createElement(
-					'th',
-					{ className: 'text-left' },
-					'\u041A\u043E\u043C\u0430\u043D\u0434\u0430 '
-				),
-				React.createElement(
-					'th',
-					{ className: 'text-center tournament-group-table-score-games' },
-					React.createElement(
-						'div',
-						{ className: 'hidden-mobile' },
-						'\u0418\u0433\u0440'
-					),
-					React.createElement(
-						'div',
-						{ className: 'visible-mobile' },
-						'\u0418'
-					)
-				),
-				React.createElement(
-					'th',
-					{ className: 'text-center tournament-group-table-score-points' },
-					React.createElement(
-						'div',
-						{ className: 'hidden-mobile' },
-						'\u041D\u0430\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u043E\u0447\u043A\u0438'
-					),
-					React.createElement(
-						'div',
-						{ className: 'visible-mobile' },
-						'\u041E'
-					)
-				),
-				React.createElement(
-					'th',
-					{ className: 'text-center tournament-group-table-score-ratio' },
-					React.createElement(
-						'div',
-						{ className: 'hidden-mobile' },
-						'\u0421\u043E\u043E\u0442\u043D\u043E\u0448\u0435\u043D\u0438\u0435 \u043C\u044F\u0447\u0435\u0439'
-					),
-					React.createElement(
-						'div',
-						{ className: 'visible-mobile' },
-						'\u041C\u044F\u0447\u0438'
-					)
-				)
-			),
-			teamsRows
-		)
-	);
-};
-
-var TournamentMatchesTable = function TournamentMatchesTable(props) {
-	var app = props.app,
-	    matches = props.matches;
-
-	var matchesGroup = matches.filter(function (item) {
-		return item.group == app.state.selectedGroup;
-	});
-	var matchesGroupRow = matchesGroup.map(function (item, index) {
-		return React.createElement(
-			'tr',
-			{ key: index },
-			React.createElement(
-				'td',
-				{ className: 'tournament-matches-table-team-logo' },
-				React.createElement('img', { src: item.symbol1, alt: item.team1Title })
-			),
-			React.createElement(
-				'td',
-				{ className: 'text-right tournament-matches-table-team-name' },
-				item.team1Title
-			),
-			React.createElement(
-				'td',
-				{ className: 'text-center' },
-				React.createElement(
-					'div',
-					{ className: 'tournament-matches-table-score' },
-					item.score
-				)
-			),
-			React.createElement(
-				'td',
-				{ className: 'tournament-matches-table-team-name' },
-				item.team2Title
-			),
-			React.createElement(
-				'td',
-				{ className: 'tournament-matches-table-team-logo text-right' },
-				React.createElement('img', { src: item.symbol2, alt: item.team2Title })
-			)
-		);
-	});
-	return React.createElement(
-		'table',
-		{ className: 'tournament-matches-table' },
-		React.createElement(
-			'tbody',
-			null,
-			matchesGroupRow
-		)
-	);
-};
-
-var Footer = function Footer() {
-
-	return React.createElement(
-		'div',
-		{ className: 'fixed-footer', onClick: function onClick() {
-				return appercode.reloadPage();
-			} },
-		'\u041E\u0431\u043D\u043E\u0432\u0438\u0442\u044C'
-	);
-};
-
-var sessionFromNative = function sessionFromNative(e) {
-	var userData = JSON.parse(e);
-	var session = userData.sessionId;
-	var userId = userData.userId;
-	var projectName = userData.projectName;
-	var baseUrl = userData.baseUrl;
-	var refreshToken = userData.refreshToken;
-
-	ReactDOM.render(React.createElement(AppContainer, {
-		session: session,
-		userId: userId,
-		baseUrl: baseUrl,
-		projectName: projectName,
-		refreshToken: refreshToken
-	}), document.getElementById('root'));
+	if (team1.goals > team2.goals)
+		return -1;
+	if (team1.goals > team2.goals)
+		return 1;
 }
 
 
+
+componentDidMount() {
+	function loginByToken(baseUrl, projectName, refreshToken) {
+		var xhr = new XMLHttpRequest();
+		var url = baseUrl + projectName + "/login/byToken";
+		xhr.open("POST", url, true);
+		xhr.setRequestHeader("Content-Type", "application/json");
+	
+	
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState !== 4)
+				return;
+			if (xhr.status !== 200) {
+				console.log(xhr.status + ': ' + xhr.statusText);
+			} else {
+				var response = JSON.parse(xhr.responseText)
+				const session = response.sessionId;
+				getTournament(baseUrl, projectName, session, refreshToken)
+			}
+		};
+		xhr.send('"' + refreshToken + '"');
+	}
+
+	function getTournament (baseUrl, projectName, session, refreshToken) {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', baseUrl + projectName + "/objects/Tournaments?include=['title','description']&take=-1");
+		xhr.setRequestHeader('X-Appercode-Session-Token', session);
+		xhr.send();
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState !== 4)
+				return;
+			if (xhr.status === 401) {
+				loginByToken(baseUrl, projectName, refreshToken);
+			} else
+			if (xhr.status !== 200) {
+				console.log(xhr.status + ': ' + xhr.statusText);
+			} else {
+				var response = JSON.parse(xhr.responseText);
+				const tournaments = response;
+				addTournamentToState(tournaments, appContainer);
+				getStages(baseUrl, projectName, session);
+			}
+		}
+	}	
+
+	function addTournamentToState(tournaments, appContainer){
+		appContainer.setState({
+			tournaments: tournaments
+		})
+	}
+	
+	function getStages(baseUrl, projectName, session){
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', baseUrl + projectName + "/objects/Stages?include=['title','date','id']&take=-1");
+		xhr.setRequestHeader('X-Appercode-Session-Token', session);
+		xhr.send();
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState !== 4)
+				return;
+			if (xhr.status === 401) {
+				//loginByToken();
+			} else
+			if (xhr.status !== 200) {
+				console.log(xhr.status + ': ' + xhr.statusText);
+			} else {
+				var response = JSON.parse(xhr.responseText);
+				const stages = response;
+				addStagesToState(stages, appContainer);
+				getGroups(baseUrl, projectName, session);
+			}
+		}
+	}
+
+	function addStagesToState(stages, appContainer){
+		appContainer.setState({
+			stages: stages,
+			selectedStage: stages[0].id
+		})
+	}
+
+	function getGroups(baseUrl, projectName, session){
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', baseUrl + projectName + "/objects/GroupsFootball?include=['title','stage','teams','id']&take=-1");
+		xhr.setRequestHeader('X-Appercode-Session-Token', session);
+		xhr.send();
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState !== 4)
+				return;
+			if (xhr.status === 401) {
+				//loginByToken();
+			} else
+			if (xhr.status !== 200) {
+				console.log(xhr.status + ': ' + xhr.statusText);
+			} else {
+				var response = JSON.parse(xhr.responseText);
+				const groups = response;
+				addGroupsToState(groups, appContainer);
+				getTeams(baseUrl, projectName, session)
+			}
+		}
+	}
+
+	function addGroupsToState(groups, appContainer){
+		appContainer.setState({
+			groups: groups,
+			selectedGroup: groups[0].id
+		})
+	}
+
+	function getTeams(baseUrl, projectName, session){
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', baseUrl + projectName + "/objects/footballTeam?include=['id','title','symbol']&take=-1");
+		xhr.setRequestHeader('X-Appercode-Session-Token', session);
+		xhr.send();
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState !== 4)
+				return;
+			if (xhr.status === 401) {
+				//loginByToken();
+			} else
+			if (xhr.status !== 200) {
+				console.log(xhr.status + ': ' + xhr.statusText);
+			} else {
+				var response = JSON.parse(xhr.responseText);
+				const teams = response;
+				addTeamsToState(teams, appContainer);
+				getMatches(baseUrl, projectName, session)
+			}
+		}
+	}
+
+	function addTeamsToState(teams, appContainer){
+
+		teams.forEach(item =>{
+			item.goals = 0;
+			item.falls = 0;
+			item.score = 0;
+			item.games = 0;
+		})
+		appContainer.setState({
+			teams: teams
+		})
+	}
+
+	function getMatches(baseUrl, projectName, session){
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', baseUrl + projectName + "/objects/GamesFooball?include=['stage','group','team1','team2','score']&take=-1");
+		xhr.setRequestHeader('X-Appercode-Session-Token', session);
+		xhr.send();
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState !== 4)
+				return;
+			if (xhr.status === 401) {
+				//loginByToken();
+			} else
+			if (xhr.status !== 200) {
+				console.log(xhr.status + ': ' + xhr.statusText);
+			} else {
+				var response = JSON.parse(xhr.responseText);
+				let matches = response;
+				let teams = appContainer.state.teams;
+				const { selectedGroup } = appContainer.state
+
+				matches.forEach(match => {
+					const indexTeam1 = teams.findIndex( team => team.id === match.team1);
+					match.team1Title = teams[indexTeam1].title;
+					match.symbol1 = teams[indexTeam1].symbol
+
+					const indexTeam2 = teams.findIndex( team => team.id === match.team2);
+					match.team2Title = teams[indexTeam2].title;
+					match.symbol2 = teams[indexTeam2].symbol
+				})
+				addMatchesToState(matches, appContainer); 
+				appContainer.displayTeamsInGroup(selectedGroup, teams, matches);
+				appContainer.setState({
+					loading: false
+				})
+			}
+		}
+	}
+
+	function addMatchesToState(matches, appContainer){
+		appContainer.setState({
+			matches: matches
+		})
+	}
+	const { baseUrl, projectName, refreshToken} = this.props;
+	this.setState({
+		session: this.props.session
+	})
+	const session = this.props.session;
+	const appContainer = this;
+	getTournament (baseUrl, projectName, session, refreshToken);
+}
+
+render(){
+	
+	const { loading } = this.state;
+
+	return (
+			<div>
+					<App tournament = {this.state.tournaments} 
+							stages = { this.state.stages } 
+							groups = { this.state.groups }
+							teams = { this.state.teams }
+							matches = { this.state.matches }
+							selectedTeams ={this.state.selectedTeams}
+							setSelectedGroup = { this.setSelectedGroup }
+							displayTeamsInGroup = {this.displayTeamsInGroup}
+							app = {this}/>
+							{loading ? <LoadAnimation /> : null}
+			</div>
+	)
+}
+}
+
+const LoadAnimation = () => {
+return(
+	<div className="loader_background">
+		<div className="loader"></div>
+	</div>
+)
+}
+
+const App = (props) => {
+const {tournament, stages, groups, teams, matches, setSelectedGroup, selectedTeams, app} = props;
+
+return(
+	<div>
+		<header className="tournament-header">
+			<div className="clearfix">
+				<TournamentInfo title={tournament[0].title} description={tournament[0].description}/>
+				<StageInfo stages = { stages } setSelectedGroup = { setSelectedGroup } app = { app } />
+			</div>	
+			<div className="block-separator"></div>
+		</header>
+		<main>
+				<TournamentGroupMenu groups = { groups } teams = { teams } matches = { matches } app={ app }/>
+				<TournamentGroupTable selectedTeams = { selectedTeams }  />
+				<div className="block-separator"></div>
+				<TournamentMatchesTable matches = { matches } app={ app }/>
+		</main>
+		<Footer app = {app} />
+	</div>
+)
+}
+
+const TournamentInfo = (props) => {
+const {title, description} = props;
+const descriptionHTML = (description);
+
+return (
+	<div className="tournament-header-desc">
+		<div className="tournament-header-title">{title}</div>
+		<div dangerouslySetInnerHTML={{__html:descriptionHTML}}/>
+		
+	</div>
+)
+}
+
+const StageInfo = (props) => {
+const {stages, setSelectedGroup,  app} = props;
+return(
+	<div className="tournament-header-meta">
+			<ListStages	stages = { stages }
+									setSelectedGroup = { setSelectedGroup } 
+									app = { app }/>
+			<DateStage	app = { app } />
+		
+	</div>
+)
+}
+
+const ListStages = ( props ) => {
+const {stages, setSelectedGroup, app} = props;
+const stagesList = stages.map((item, index) => (
+	<option key={index} 
+					value = { item.id } 
+					onClick = {() => setSelectedGroup(item.id) } >
+						{item.title}
+	</option>
+))
+
+
+return(
+	<div className="tournament-header-meta-stage">
+		<div className="custom-select">
+			<select name="stage" 
+							onChange = {event => setSelectedGroup(event.target.value)}
+							value={app.state.selectedStage}>
+				{stagesList}
+			</select>
+		</div>
+	</div>
+)
+}
+
+const DateStage = (props) => {
+const { app } = props;
+const { selectedStage, stages } = app.state;
+const indexDateStage = stages.findIndex( item => item.id === selectedStage );
+
+return(
+	<div className="tournament-header-meta-date">
+		{indexDateStage !== -1 ? stages[indexDateStage].date : null}
+	</div>
+)
+}
+
+const TournamentGroupMenu = (props) => {
+const {app, groups, teams, matches } = props;
+const {selectedGroup, selectedStage} = app.state;
+let groupsList = groups.filter( item => {
+	if(item.stage === selectedStage)
+	return item;
+})
+groupsList = groupsList.map((item, index) => (
+	<li className={ selectedGroup == item.id ? 
+									"tournament-group-menu-list-item active" : 
+									"tournament-group-menu-list-item"} 
+			key={ index } 
+			onClick = { () => app.displayTeamsInGroup(item.id, teams, matches) }>
+		<div  >
+			{item.title}
+		</div>
+	</li>) 
+);
+
+return (
+	<div className="tournament-group-menu">
+			<div className="tournament-group-menu-list-wrapper">
+					<ul className="tournament-group-menu-list">
+							{groupsList}
+					</ul>
+			</div>
+	</div>
+)
+}
+
+const TournamentGroupTable = (props) => {
+	const { selectedTeams } = props;
+
+	const teamsRows = selectedTeams.map((item, index) =>{
+		return (
+			<tr key={index}>
+					<td className="tournament-group-table-num text-center text-gray">{index+1}</td>
+					<td className="tournament-group-table-logo"><img src={item.symbol} alt={item.title} /></td>
+					<td>{item.title} </td>
+					<td className="text-center text-gray">{item.games}</td>
+					<td className="text-center text-gray">{item.score}</td>
+					<td className="text-center text-gray">{item.goals}-{item.falls}</td>
+			</tr>
+		)
+	})
+	
+	return(
+		<table className="tournament-group-table" >
+		<tbody>
+			<tr className="tournament-group-table-heading">
+				<th className="tournament-group-table-num"></th>
+				<th className="tournament-group-table-logo"></th>
+				<th className="text-left">Команда </th>
+				<th className="text-center tournament-group-table-score-games">
+						<div className="hidden-mobile">Игр</div>
+						<div className="visible-mobile">И</div>
+				</th>
+				<th className="text-center tournament-group-table-score-points">
+						<div className="hidden-mobile">Набранные очки</div>
+						<div className="visible-mobile">О</div>
+				</th>
+				<th className="text-center tournament-group-table-score-ratio">
+						<div className="hidden-mobile">Соотношение мячей</div>
+						<div className="visible-mobile">Мячи</div>
+				</th>
+			</tr>
+			{teamsRows}
+			</tbody>
+	</table>
+	)
+
+}
+
+const TournamentMatchesTable = (props) => {
+
+const {app, matches} = props;
+const matchesGroup = matches.filter( item => item.group == app.state.selectedGroup)
+const matchesGroupRow = matchesGroup.map( (item, index) => (
+	<tr key={index}>
+		<td className="tournament-matches-table-team-logo">
+				<img src={item.symbol1} alt={item.team1Title}/>
+		</td>
+		<td className="text-right tournament-matches-table-team-name">{item.team1Title}</td>
+		<td className="text-center">
+				<div className="tournament-matches-table-score">{item.score}</div>
+		</td>
+		<td className="tournament-matches-table-team-name">{item.team2Title}</td>
+		<td className="tournament-matches-table-team-logo text-right">
+				<img src={item.symbol2} alt={item.team2Title} />
+		</td>
+	</tr>
+))
+return(
+	<table className="tournament-matches-table">
+		<tbody>
+			{matchesGroupRow}
+		</tbody>
+	</table>
+)
+}
+
+const Footer = (props) => {
+const { app } = props
+const isiOS = app.props.isiOS;
+var appercode; 
+return (
+	<div>
+		{isiOS ? (
+			<div className="fixed-footer" onClick={() => document.location.reload()}>
+				Обновить
+			</div>
+		) : (
+			<div className="fixed-footer" onClick={() => appercode.reloadPage()}>
+				Обновить
+			</div>
+		)}
+	</div>
+);
+
+}
+
+function sessionFromNative(e){
+const userData = JSON.parse(e);
+const session = userData.sessionId;
+const userId = userData.userId;
+const projectName = userData.projectName;
+const baseUrl = userData.baseUrl;
+const refreshToken = userData.refreshToken;
+const isiOS = (userData.isiOS == "iOS");
+
+ReactDOM.render(<AppContainer 
+									session={session} 
+									userId={userId}
+									baseUrl={baseUrl}
+									projectName={projectName}
+									refreshToken={refreshToken}
+									isiOS = { isiOS }
+								/>, document.getElementById('root'));
+}
     </script>
     
   </body>
