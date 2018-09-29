@@ -3,7 +3,7 @@
   <head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>Hello World</title>
+		<title>Hello World</title>
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     
@@ -447,9 +447,12 @@ left: 0;
 right: 0;
 z-index: 50;
 }
-      </style>
-    <div id="root"></div>
-    <script type="text/babel">
+			</style>
+			
+		<div id="root"></div>
+		
+<script type="text/babel">
+
 class AppContainer extends React.Component{
 
 constructor(props){
@@ -584,7 +587,7 @@ componentDidMount() {
 		var url = baseUrl + projectName + "/login/byToken";
 		xhr.open("POST", url, true);
 		xhr.setRequestHeader("Content-Type", "application/json");
-	
+
 	
 		xhr.onreadystatechange = function () {
 			if (xhr.readyState !== 4)
@@ -594,16 +597,19 @@ componentDidMount() {
 			} else {
 				var response = JSON.parse(xhr.responseText)
 				const session = response.sessionId;
-				getTournament(baseUrl, projectName, session, refreshToken)
+				getTournament(baseUrl, projectName, session, refreshToken, language)
 			}
 		};
 		xhr.send('"' + refreshToken + '"');
 	}
 
-	function getTournament (baseUrl, projectName, session, refreshToken) {
+	function getTournament (baseUrl, projectName, session, refreshToken, language) {
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', baseUrl + projectName + "/objects/Tournaments?include=['title','description']&take=-1");
+		xhr.open('GET', baseUrl + projectName + "/objects/Tournaments?include=['title','description']&take=-1&order=createdAt");
 		xhr.setRequestHeader('X-Appercode-Session-Token', session);
+		xhr.setRequestHeader('X-Appercode-Language', language);
+
+
 		xhr.send();
 
 		xhr.onreadystatechange = function () {
@@ -618,7 +624,7 @@ componentDidMount() {
 				var response = JSON.parse(xhr.responseText);
 				const tournaments = response;
 				addTournamentToState(tournaments, appContainer);
-				getStages(baseUrl, projectName, session);
+				getStages(baseUrl, projectName, session, language);
 			}
 		}
 	}	
@@ -629,10 +635,11 @@ componentDidMount() {
 		})
 	}
 	
-	function getStages(baseUrl, projectName, session){
+	function getStages(baseUrl, projectName, session, language){
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', baseUrl + projectName + "/objects/Stages?include=['title','date','id']&take=-1");
+		xhr.open('GET', baseUrl + projectName + "/objects/Stages?include=['title','date','id']&take=-1&order=createdAt");
 		xhr.setRequestHeader('X-Appercode-Session-Token', session);
+		xhr.setRequestHeader('X-Appercode-Language', language);
 		xhr.send();
 
 		xhr.onreadystatechange = function () {
@@ -647,7 +654,7 @@ componentDidMount() {
 				var response = JSON.parse(xhr.responseText);
 				const stages = response;
 				addStagesToState(stages, appContainer);
-				getGroups(baseUrl, projectName, session);
+				getGroups(baseUrl, projectName, session, language);
 			}
 		}
 	}
@@ -659,10 +666,11 @@ componentDidMount() {
 		})
 	}
 
-	function getGroups(baseUrl, projectName, session){
+	function getGroups(baseUrl, projectName, session, language){
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', baseUrl + projectName + "/objects/GroupsFootball?include=['title','stage','teams','id']&take=-1");
+		xhr.open('GET', baseUrl + projectName + "/objects/GroupsFootball?include=['title','stage','teams','id']&take=-1&order=createdAt");
 		xhr.setRequestHeader('X-Appercode-Session-Token', session);
+		xhr.setRequestHeader('X-Appercode-Language', language);
 		xhr.send();
 
 		xhr.onreadystatechange = function () {
@@ -677,7 +685,7 @@ componentDidMount() {
 				var response = JSON.parse(xhr.responseText);
 				const groups = response;
 				addGroupsToState(groups, appContainer);
-				getTeams(baseUrl, projectName, session)
+				getTeams(baseUrl, projectName, session, language)
 			}
 		}
 	}
@@ -689,10 +697,11 @@ componentDidMount() {
 		})
 	}
 
-	function getTeams(baseUrl, projectName, session){
+	function getTeams(baseUrl, projectName, session, language){
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', baseUrl + projectName + "/objects/footballTeam?include=['id','title','symbol']&take=-1");
+		xhr.open('GET', baseUrl + projectName + "/objects/footballTeam?include=['id','title','symbol']&take=-1&order=createdAt");
 		xhr.setRequestHeader('X-Appercode-Session-Token', session);
+		xhr.setRequestHeader('X-Appercode-Language', language);
 		xhr.send();
 
 		xhr.onreadystatechange = function () {
@@ -727,7 +736,7 @@ componentDidMount() {
 
 	function getMatches(baseUrl, projectName, session){
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', baseUrl + projectName + "/objects/GamesFooball?include=['stage','group','team1','team2','score']&take=-1");
+		xhr.open('GET', baseUrl + projectName + "/objects/GamesFooball?include=['stage','group','team1','team2','score']&take=-1&order=createdAt");
 		xhr.setRequestHeader('X-Appercode-Session-Token', session);
 		xhr.send();
 
@@ -768,13 +777,13 @@ componentDidMount() {
 			matches: matches
 		})
 	}
-	const { baseUrl, projectName, refreshToken} = this.props;
+	const { baseUrl, projectName, refreshToken, language} = this.props;
 	this.setState({
 		session: this.props.session
 	})
 	const session = this.props.session;
 	const appContainer = this;
-	getTournament (baseUrl, projectName, session, refreshToken);
+	getTournament (baseUrl, projectName, session, refreshToken, language);
 }
 
 render(){
@@ -820,7 +829,7 @@ return(
 		</header>
 		<main>
 				<TournamentGroupMenu groups = { groups } teams = { teams } matches = { matches } app={ app }/>
-				<TournamentGroupTable selectedTeams = { selectedTeams }  />
+				<TournamentGroupTable selectedTeams = { selectedTeams } app = { app } />
 				<div className="block-separator"></div>
 				<TournamentMatchesTable matches = { matches } app={ app }/>
 		</main>
@@ -903,8 +912,8 @@ groupsList = groupsList.map((item, index) => (
 									"tournament-group-menu-list-item active" : 
 									"tournament-group-menu-list-item"} 
 			key={ index } 
-			onClick = { () => app.displayTeamsInGroup(item.id, teams, matches) }>
-		<div  >
+			>
+		<div onClick = { () => app.displayTeamsInGroup(item.id, teams, matches) }>
 			{item.title}
 		</div>
 	</li>) 
@@ -922,7 +931,8 @@ return (
 }
 
 const TournamentGroupTable = (props) => {
-	const { selectedTeams } = props;
+	const { selectedTeams, app } = props;
+	const { language } = app.props;
 
 	const teamsRows = selectedTeams.map((item, index) =>{
 		return (
@@ -943,18 +953,18 @@ const TournamentGroupTable = (props) => {
 			<tr className="tournament-group-table-heading">
 				<th className="tournament-group-table-num"></th>
 				<th className="tournament-group-table-logo"></th>
-				<th className="text-left">Команда </th>
+				<th className="text-left"> {language == "en" ? "Team" : "Команда"} </th>
 				<th className="text-center tournament-group-table-score-games">
-						<div className="hidden-mobile">Игр</div>
-						<div className="visible-mobile">И</div>
+						<div className="hidden-mobile">{language == "en" ? "Games" : "Игр"}</div>
+						<div className="visible-mobile">{language == "en" ? "G" : "И"}</div>
 				</th>
 				<th className="text-center tournament-group-table-score-points">
-						<div className="hidden-mobile">Набранные очки</div>
-						<div className="visible-mobile">О</div>
+						<div className="hidden-mobile">{language == "en" ? "Points earned" : "Набранные очки"}</div>
+						<div className="visible-mobile">{language == "en" ? "P" : "О"}</div>
 				</th>
 				<th className="text-center tournament-group-table-score-ratio">
-						<div className="hidden-mobile">Соотношение мячей</div>
-						<div className="visible-mobile">Мячи</div>
+						<div className="hidden-mobile">{language == "en" ? "Balls" : "Соотношенеи мячей"}</div>
+						<div className="visible-mobile">{language == "en" ? "B" : "М"}</div>
 				</th>
 			</tr>
 			{teamsRows}
@@ -993,18 +1003,20 @@ return(
 }
 
 const Footer = (props) => {
-const { app } = props
-const isiOS = app.props.isiOS;
-var appercode; 
+const { app } = props;
+const { language } = app.props
+const appPlatform = app.props.appPlatform;
+var appercode;
 return (
 	<div>
-		{isiOS ? (
+		{appPlatform ? (
 			<div className="fixed-footer" onClick={() => document.location.reload()}>
-				Обновить
+				{ language == "en" ? "Refresh" : "Обновить" }
+				
 			</div>
 		) : (
 			<div className="fixed-footer" onClick={() => appercode.reloadPage()}>
-				Обновить
+				{ language == "en" ? "Refresh" : "Обновить" }
 			</div>
 		)}
 	</div>
@@ -1019,7 +1031,8 @@ const userId = userData.userId;
 const projectName = userData.projectName;
 const baseUrl = userData.baseUrl;
 const refreshToken = userData.refreshToken;
-const isiOS = (userData.isiOS == "iOS");
+const appPlatform = (userData.appPlatform == "iOS");
+const language = userData.language;
 
 ReactDOM.render(<AppContainer 
 									session={session} 
@@ -1027,7 +1040,8 @@ ReactDOM.render(<AppContainer
 									baseUrl={baseUrl}
 									projectName={projectName}
 									refreshToken={refreshToken}
-									isiOS = { isiOS }
+									appPlatform = { appPlatform }
+									language = { language }
 								/>, document.getElementById('root'));
 }
     </script>
