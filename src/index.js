@@ -596,5 +596,6 @@ function sessionFromNative(e){
 									/>, document.getElementById('root'));
 }
 
-sessionFromNative('{"sessionId":"be52576a-03e0-4c24-88bc-8703ae982494","appPlatform":"iOS","userId":"90","projectName": "tmk","baseUrl":"https://api.appercode.com/v1/","language":"ru"}')
+window.sessionFromNative = sessionFromNative;
+
 
