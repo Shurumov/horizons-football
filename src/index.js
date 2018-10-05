@@ -213,7 +213,7 @@ class AppContainer extends React.Component{
 		function addStagesToState(stages, appContainer){
 			appContainer.setState({
 				stages: stages,
-				selectedStage: stages[0].id
+				selectedStage: stages[1].id
 			})
 		}
 
@@ -244,7 +244,7 @@ class AppContainer extends React.Component{
 		function addGroupsToState(groups, appContainer){
 			appContainer.setState({
 				groups: groups,
-				selectedGroup: groups[0].id
+				selectedGroup: groups[4].id
 			})
 		}
 
