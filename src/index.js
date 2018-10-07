@@ -40,13 +40,13 @@ class AppContainer extends React.Component{
 			selectedStage: item
 		})
 
-		const { teams, groups } = this.state
+		const { teams, matches } = this.state;
 
-		this.displayTeamsInGroup(this.state.groups[indexGroup].id, teams, groups)
+		this.displayTeamsInGroup(this.state.groups[indexGroup].id, teams, matches)
 	}
 
 	displayTeamsInGroup = (selectedGroup, teams, matches) => {
-
+		
 		this.setState({
 			selectedGroup: selectedGroup
 		});
@@ -62,6 +62,8 @@ class AppContainer extends React.Component{
 				selectedTeams.push(teams[indexTeam])
 			})
 		}
+
+
 		const matchesGroup = matches.filter( item => item.group == selectedGroup)
 
 		selectedTeams.forEach(item => {
@@ -79,6 +81,7 @@ class AppContainer extends React.Component{
 		this.setState({
 			selectedTeams: selectedTeams
 		});
+
 	}
 
 	calculationPoints = (matches, selectedTeams) => {
@@ -118,6 +121,11 @@ class AppContainer extends React.Component{
 	}
 
 	getTeamsDiff = (team1, team2) => {
+		
+		if (team1.score > team2.score)
+			return -1;
+		if (team1.score < team2.score)
+			return 1;
 
 		if (team1.diff > team2.diff)
 			return -1;
@@ -213,7 +221,7 @@ class AppContainer extends React.Component{
 		function addStagesToState(stages, appContainer){
 			appContainer.setState({
 				stages: stages,
-				selectedStage: stages[1].id
+				selectedStage: stages[2].id
 			})
 		}
 
@@ -244,7 +252,7 @@ class AppContainer extends React.Component{
 		function addGroupsToState(groups, appContainer){
 			appContainer.setState({
 				groups: groups,
-				selectedGroup: groups[4].id
+				selectedGroup: groups[8].id
 			})
 		}
 
